@@ -95,10 +95,6 @@ connection.connect((err) => {
                 updateManager();
                 break;
   
-            case "View the total utilized budget of a department":
-                budgetOfDepartment();
-                break;
-  
             case "Exit":
                 console.table("Thanks for using the Employee Tracker!")
                 connection.end();
