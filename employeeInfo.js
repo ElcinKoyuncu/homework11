@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const colors = require('colors');
 
+
 const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
@@ -14,10 +15,10 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    runSearch(); 
+    start(); 
   });
   
-  function runSearch() {
+  function start() {
     inquirer.prompt({
         name: "action",
         type:"list",
@@ -28,9 +29,9 @@ connection.connect((err) => {
             "View All Employees by Manager",
             "View All Departments",
             "View All Roles",
-            "Add Department",
-            "Add Role",
-            "Add Employee",
+            "Add New Department",
+            "Add New Role",
+            "Add New Employee",
             "Remove Department",
             "Remove Role",
             "Remove Employee",
@@ -121,7 +122,7 @@ connection.connect((err) => {
         if (err) throw err;
         console.log("ALL Employees View".green)
         console.table(res);
-        runSearch();
+        start();
     });
 };
 
@@ -146,7 +147,7 @@ function employeeByDepartment() {
             if(err) throw err;
             console.log("All Employees by Department".green)
             console.table(res);
-            runSearch();
+            start();
         });
     })
 };
@@ -168,7 +169,7 @@ function employeeByManager() {
                 if (err) throw err;
                 console.log("Employee by Manager".green)
                 console.table(result);
-                runSearch();
+                start();
             });
        })
     });
@@ -180,7 +181,7 @@ function allDepartment() {
         if (err) throw err;
         console.log("All departments".magenta)
         console.table(res);
-        runSearch();
+        start();
     });
 }
 
@@ -193,7 +194,7 @@ function allRoles() {
         if (err) throw err;
         console.log("All Roles".magenta)
         console.table(res);
-        runSearch();
+        start();
     });
 }
 
@@ -206,7 +207,7 @@ function addDepartment() {
         connection.query(`INSERT INTO department (name) VALUES ("${answer.newDepartment}")`, function (err, res) {
             if (err) throw err;
             console.log(`New department ${answer.newDepartment} has been successfully added`.yellow);
-            runSearch();
+            start();
         });
     })
 }
@@ -231,7 +232,7 @@ function addRole() {
             connection.query(`INSERT INTO role(title, salary, department_id) VALUES ('${answer.newTitle}', '${answer.newSalary}', ${answer.roleID})`, function (err, res) {
                 if (err) throw err;
                 console.log(`New role has been successfully added`.yellow);
-                runSearch();
+                start();
             });
         });
     });
@@ -266,7 +267,7 @@ function addNewEmployee() {
                     console.log("------------")
                     console.log(`New employee ${answer.first_name} ${answer.last_name} has been successfully added`.yellow);
                     console.log("------------")
-                    runSearch();
+                    start();
                 });
             });
         });
@@ -295,7 +296,7 @@ function addNewEmployee() {
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log(`Department ${thisDepartment[0].name} has been successfully removed`.red);
-                runSearch();
+                start();
             });
         });
     });
@@ -316,7 +317,7 @@ function removeRole() {
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log(`Role ${thisRole[0].name} has been successfully removed`.red);
-                runSearch();
+                start();
             });
         });
     });
@@ -346,7 +347,7 @@ function removeEmployee() {
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log(`Employee ${thisUser[0].name} has been successfully removed`.red);
-                runSearch();
+                start();
             });
         })
     });
@@ -371,7 +372,7 @@ function updateRole() {
                     if (err) throw err;
                     console.log("Employee's role has been successfully updated".green)
 
-                    runSearch();
+                    start();
                 });
             });
         });
@@ -397,13 +398,24 @@ function updateManager() {
                 connection.query(`UPDATE employee SET manager_id ="${answer.managerID}" WHERE id="${answer.employeeID}"`, function (err, res) {
                     if (err) throw err;
                     console.log("Employee's manager has been successfully updated".green)
-                    runSearch();
+                    start();
                 });
             });
         });
     });
 }
-
+function budgetOfDepartment() {
+    var query = "SELECT department.id, department.name, SUM(role.salary) AS utilized_budget FROM employee";
+    query += " LEFT JOIN role on employee.role_id = role.id";
+    query += " LEFT JOIN department on role.department_id = department.id";
+    query += " GROUP BY department.id, department.name";
+    connection.query(query, function (err, res) {
+        if (err) throw err;
+        console.log(`View budget of a department`.yellow);
+        console.table(res);
+        start();
+    });
+}
 
 
  
