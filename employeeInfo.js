@@ -2,7 +2,25 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const colors = require('colors');
+const logo = require('asciiart-logo');
 
+
+console.log(
+    logo({
+        name: 'Company Database',
+        font: 'Speed',
+        lineChars: 10,
+        padding: 2,
+        margin: 3,
+        borderColor: 'grey',
+        logoColor: 'magenta',
+        
+    })
+    .emptyLine()
+    .right('version 3.7.123')
+    .emptyLine()
+    .render()
+);
 
 const connection = mysql.createConnection({
   host: 'localhost',
