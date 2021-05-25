@@ -23,11 +23,11 @@ connection.connect((err) => {
         type:"list",
         message: "What would you like to do?",
         choices: [
-            "View All Departments",
-            "View All Roles",
             "View All Employees",
             "View All Employees by Department",
             "View All Employees by Manager",
+            "View All Departments",
+            "View All Roles",
             "Add Department",
             "Add Role",
             "Add Employee",
@@ -60,8 +60,8 @@ connection.connect((err) => {
                 break;
   
             case "View All Roles":
-                    allRoles();
-                    break;
+                allRoles();
+                break;
   
             case "Add Department":
                 addDepartment();
@@ -108,4 +108,6 @@ connection.connect((err) => {
         }
     });
   }
+
+ 
   
