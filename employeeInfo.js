@@ -272,6 +272,34 @@ function addNewEmployee() {
         });
     });
   };
+
+  function removeDepartment() {
+    connection.query("SELECT name, id FROM department", function (err, res) {
+
+        const departmentChoices = res.map(item => {
+            return {
+                name: item.name,
+                value: item.id
+            }
+        });
+
+        inquirer.prompt([{
+            message: "Which department would you like to remove?",
+            type: "list",
+            name: "removedDepartment",
+            choices: departmentChoices
+        }]).then(function (answer) {
+
+            const thisDepartment = departmentChoices.filter(item => item.value === answer.removedDepartment);
+            var query = `DELETE FROM department WHERE id = "${answer.removedDepartment}"`;
+            connection.query(query, function (err, res) {
+                if (err) throw err;
+                console.log(`Department ${thisDepartment[0].name} has been successfully removed`.red);
+                runSearch();
+            });
+        });
+    });
+};
   
 
 
