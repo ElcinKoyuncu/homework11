@@ -346,12 +346,63 @@ function removeEmployee() {
             connection.query(query, function (err, res) {
                 if (err) throw err;
                 console.log(`Employee ${thisUser[0].name} has been successfully removed`.red);
-                start();
+                runSearch();
             });
         })
     });
 };
 
+function updateRole() {
+    connection.query(`SELECT CONCAT(first_name, " ", last_name) AS Employee, id FROM employee`, function (err, res) {
+        connection.query(`SELECT title, id from role`, function (err, data) {
+            inquirer.prompt([{
+                message: "What is the name of the employee that you would like to update a role?",
+                type: "list",
+                name: "updatedEmployee",
+                choices: res.map(o => ({ name: o.Employee, value: o.id }))
+            }, {
+                message: "What is the employee's new role?",
+                type: "list",
+                name: 'role_id',
+                choices: data.map(o => ({ name: o.title, value: o.id }))
+
+            }]).then(answer => {
+                connection.query(`UPDATE employee SET role_id = "${answer.role_id}" WHERE id= "${answer.updatedEmployee}"`, function (err, res) {
+                    if (err) throw err;
+                    console.log("Employee's role has been successfully updated".green)
+
+                    runSearch();
+                });
+            });
+        });
+    });
+}
+
+function updateManager() {
+    connection.query(`SELECT CONCAT(first_name, " ", last_name) AS Employee, id FROM employee`, function (err, res) {
+        connection.query(`SELECT CONCAT(first_name, " ", last_name) AS Manager, id FROM employee`, function (err, data) {
+            inquirer.prompt([{
+                message: "What is the name of the employee that you would like to update the Manager?",
+                type: "list",
+                name: "employeeID",
+                choices: res.map(o => ({ name: o.Employee, value: o.id }))
+
+            }, {
+                message: "Who is the employee's new Manager?",
+                type: "list",
+                name:'managerID',
+                choices: data.map(o => ({ name: o.Manager, value: o.id }))
+
+            }]).then(answer => {
+                connection.query(`UPDATE employee SET manager_id ="${answer.managerID}" WHERE id="${answer.employeeID}"`, function (err, res) {
+                    if (err) throw err;
+                    console.log("Employee's manager has been successfully updated".green)
+                    runSearch();
+                });
+            });
+        });
+    });
+}
 
 
 
