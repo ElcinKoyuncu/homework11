@@ -125,5 +125,59 @@ connection.connect((err) => {
     });
 };
 
+function employeeByDepartment() {
+    inquirer.prompt({
+        name: "department",
+        type: "list",
+        message: "By which department would you like to view the employees?",
+        choices: [
+            "Sales", 
+            "Engineering",
+            "Finance",
+            "Marketing"
+        ]
+    }).then(function (answer) {
+        var query = `SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) AS Fullname, department.name AS department
+        FROM employee
+        LEFT JOIN role on employee.role_id = role.id
+        LEFT JOIN department on role.department_id = department.id
+        WHERE department.name ="${answer.department}"`;
+        connection.query(query, function (err, res) {
+            if(err) throw err;
+            console.log("All Employees by Department".green)
+            console.table(res);
+            start();
+        });
+    })
+};
+
+function employeeByManager() {
+    connection.query(`SELECT CONCAT(m.first_name, " ", m.last_name) AS Manager, m.id FROM employee INNER JOIN employee m ON employee.manager_id = m.id`, function (err, res) {
+       inquirer.prompt({
+           name: "manager_id",
+           type: "list",
+           message: "By which Manager would you like to view the employees?",
+           choices: res.map(o => ({ name: o.Manager, value: o.id }))
+
+       }).then(function (answer) {
+           var query = `SELECT employee.id, CONCAT(first_name, " ", last_name) AS Name, role.title
+           FROM employee INNER JOIN role ON employee.role_id = role.id
+           WHERE employee.manager_id = ${answer.manager_id} GROUP BY employee.id`;
+           connection.query(query,
+            function (err, result) {
+                if (err) throw err;
+                console.log("Employee by Manager".green)
+                console.table(result);
+                start();
+            });
+       })
+    });
+}
+
+
+
+
+
+
  
   
