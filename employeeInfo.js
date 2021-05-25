@@ -63,15 +63,15 @@ connection.connect((err) => {
                 allRoles();
                 break;
 
-            case "Add Department":
+            case "Add New Department":
                 addDepartment();
                 break;
 
-            case "Add Role":
+            case "Add New Role":
                 addRole();
                 break;
 
-            case "Add Employee":
+            case "Add New Employee":
                 addNewEmployee();
                 break;
 
@@ -205,7 +205,7 @@ function addDepartment() {
     }]).then(answer => {
         connection.query(`INSERT INTO department (name) VALUES ("${answer.newDepartment}")`, function (err, res) {
             if (err) throw err;
-            console.log(`Department ${answer.newDepartment} has been successfully added`.yellow);
+            console.log(`New department ${answer.newDepartment} has been successfully added`.yellow);
             runSearch();
         });
     })
@@ -237,7 +237,42 @@ function addRole() {
     });
 }
 
-
+function addNewEmployee() {
+    connection.query(`SELECT CONCAT(first_name, " ", last_name) AS Manager, id FROM employee`, function (err, res) {
+        connection.query(`SELECT DISTINCT title, id from role`, function (err, data) {
+            inquirer.prompt([{
+                message: "What is the employee's first name?",
+                type: "input",
+                name: "first_name"
+            }, {
+                message: "What is the employee's last name?",
+                type: "input",
+                name: "last_name"
+            }, {
+                message: "What is the employee's role?",
+                type: "list",
+                name: 'role_id',
+                choices: data.map(o => ({ name: o.title, value: o.id }))
+  
+            }, {
+                message: "Who will be this employee's Manager?",
+                type: "list",
+                name: 'manager_id',
+                choices: res.map(o => ({ name: o.Manager, value: o.id }))
+  
+            }]).then(answer => {
+                connection.query(`INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ('${answer.first_name}', '${answer.last_name}', ${answer.role_id}, ${answer.manager_id})`, function (err, res) {
+                    if (err) throw err;
+                    console.log("------------")
+                    console.log(`New employee ${answer.first_name} ${answer.last_name} has been successfully added`.yellow);
+                    console.log("------------")
+                    runSearch();
+                });
+            });
+        });
+    });
+  };
+  
 
 
 
