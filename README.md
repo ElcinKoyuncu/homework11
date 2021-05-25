@@ -9,11 +9,11 @@ This is the homework for Employee Tracker.
 
 ## Screenshot for the application
 
-![Screenshot](./Assets/image/myschema.png)
+![Screenshot](./Assets/myschema.png)
 
 ## Video for the application
 
-![Demo](./Assets/image/demo.gif)
+![Demo](./Assets/demo.gif)
 
 
 
