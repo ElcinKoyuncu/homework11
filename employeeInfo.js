@@ -301,8 +301,56 @@ function addNewEmployee() {
     });
 };
   
+function removeRole() {
+    connection.query("SELECT title, id FROM role", function (req, res) {
+        const roleChoices = res.map(item => ({ name: item.title, value: item.id }));
 
+        inquirer.prompt([{
+            message: "Which role would you like to remove?",
+            type: "list",
+            name: "removeRoleChoice",
+            choices: roleChoices
+        }]).then(function (answer) {
+            const thisRole = roleChoices.filter(item=> item.value === answer.removeRoleChoice);
+            var query = `DELETE FROM role WHERE id = "${answer.removeRoleChoice}"`;
+            connection.query(query, function (err, res) {
+                if (err) throw err;
+                console.log(`Role ${thisRole[0].name} has been successfully removed`.red);
+                runSearch();
+            });
+        });
+    });
+}
 
+function removeEmployee() {
+    var query = "SELECT CONCAT(first_name, ' ', last_name) AS fullName, id FROM employee";
+    connection.query(query, async function (err, res) {
+
+        const employeeChoices = res.map(item => {
+            return {
+                name: item.fullName,
+                value: item.id
+            }
+        });
+
+        inquirer.prompt([{
+
+            type: "list",
+            name: "employeeId",
+            message: "Which employee do you want to remove?",
+            choices: employeeChoices
+        }]).then(function (answer) {
+
+            const thisUser = employeeChoices.filter(item => item.value === answer.employeeId);
+            var query = `DELETE FROM employee WHERE id = "${answer.employeeId}"`;
+            connection.query(query, function (err, res) {
+                if (err) throw err;
+                console.log(`Employee ${thisUser[0].name} has been successfully removed`.red);
+                start();
+            });
+        })
+    });
+};
 
 
 
